@@ -9,11 +9,11 @@
     ]
   },
   "rules": {
+    "quotemark": [true, "double"],
     "member-access": [true, "no-public"],
     "one-line": [true, "check-open-brace", "check-whitespace"],
     "max-classes-per-file": false,
     
-    "quotemark": [true, "single"],
     "indent": [true, "spaces", 2],
     "interface-name": false,
     "ordered-imports": false,

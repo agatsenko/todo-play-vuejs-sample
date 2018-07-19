@@ -1,57 +1,56 @@
-import { InvalidArgError, InvalidStateError } from '@/utils/Errors';
+import { InvalidArgError, InvalidStateError } from "@/utils/errors";
 
-export class Check {
-  static arg(condition: boolean, msg: () => string): void {
-    Check.check(condition, (errMsg) => new InvalidArgError(errMsg), msg);
+export function arg(condition: boolean, errMsg: () => string): void {
+  check(condition, (msg) => new InvalidArgError(msg), errMsg);
+}
+
+export function argDefined<T>(argVal: T | undefined, argName: string): void {
+  arg(argVal !== undefined, () => `${argName} is undefined`);
+}
+
+export function argNotNull<T>(argVal: T | null, argName: string): void {
+  arg(argVal !== null, () => `${argName} is null`);
+}
+
+export function argDefinedAndNotNull<T>(argVal: T | undefined | null, argName: string) {
+  argDefined(argVal, argName);
+  argNotNull(argVal, argName);
+}
+
+export function argNotEmpty(argVal: string | undefined | null, argName: string): void;
+export function argNotEmpty<T>(
+  argVal: T[] | ReadonlyArray<T> | Set<T> | ReadonlySet<T> | undefined | null,
+  argName: string,
+): void;
+export function argNotEmpty<K, V>(argVal: Map<K, V> | ReadonlyMap<K, V> | undefined | null, argName: string): void;
+export function argNotEmpty(argVal: any | undefined | null, argName: string): void {
+  argDefinedAndNotNull(argVal, argName);
+
+  let length: number;
+  if (typeof argVal === "string") {
+    length = (argVal as string).length;
   }
-
-  static argDefined<T>(arg: T | undefined, argName: string): void {
-    Check.arg(arg !== undefined, () => `${argName} is undefined`);
+  else if (Array.isArray(argVal)) {
+    length = (argVal as any[]).length;
   }
-
-  static argNotNull<T>(arg: T | null, argName: string): void {
-    Check.arg(arg !== null, () => `${argName} is null`);
+  else if (argVal instanceof Set) {
+    length = (argVal as Set<any>).size;
   }
-
-  static foo(): void {
-    const v: string | null | undefined = null;
-    Check.argDefined(v, 'v');
-    Check.argNotNull(v, 'v');
-    Check.argNotEmpty(v, 'v');
+  else if (argVal instanceof Map) {
+    length = (argVal as Map<any, any>).size;
   }
-
-  static argNotEmpty(arg: string | undefined | null, argName: string): void;
-  static argNotEmpty<T>(
-    arg: T[] | ReadonlyArray<T> | Set<T> | ReadonlySet<T> | undefined | null,
-    argName: string,
-  ): void;
-  static argNotEmpty<K, V>(arg: Map<K, V> | ReadonlyMap<K, V> | undefined | null, argName: string): void;
-  static argNotEmpty(arg: any | undefined | null, argName: string): void {
-    Check.argDefined(arg, argName);
-    Check.argNotNull(arg, argName);
-
-    let length: number;
-    if (typeof arg === 'string') {
-      length = (arg as string).length;
-    }
-    else if (Array.isArray(arg)) {
-      length = (arg as any[]).length;
-    }
-    else if (arg instanceof Set) {
-      length = (arg as Set<any>).size;
-    }
-    else if (arg instanceof Map) {
-      length = (arg as Map<any, any>).size;
-    }
-    else {
-      throw new InvalidStateError(`${arg} argument is unsupported`);
-    }
-    Check.arg(length > 0, () => `${argName} is empty`);
+  else {
+    throw new InvalidStateError(`${argVal} argument is unsupported`);
   }
+  arg(length > 0, () => `${argName} is empty`);
+}
 
-  private static check<E extends Error>(condition: boolean, err: (msg: string) => E, msg: () => string): void {
-    if (!condition) {
-      throw err(msg());
-    }
+export function state(condition: boolean, errMsg: () => string) {
+  check(condition, (msg: string) => new InvalidStateError(msg), errMsg);
+}
+
+function check<E extends Error>(condition: boolean, err: (msg: string) => E, msg: () => string): void {
+  if (!condition) {
+    throw err(msg());
   }
 }
