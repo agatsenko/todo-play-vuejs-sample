@@ -14,58 +14,95 @@ test("check.arg(false, msg) should throw InvalidArgError", () => {
   expect(test).toThrow(errMsg);
 });
 
-test("check.argDefined(arg, argName) should not throw any error if arg is defined", () => {
-  // FIXME: not yet implemented
-  throw new Error("not yet implemented");
+test.each`
+  arg
+  ${1}
+  ${"string value"}
+  ${null}
+  ${{ one: 1, two: "two" }}
+`("check.argDefined($arg, argName) should not throw any error", ({ arg }) => {
+  check.argDefined(arg, "arg");
 });
 
 test("check.argDefined(undefined, argName) should throw InvalidArgError", () => {
-  // FIXME: not yet implemented
-  throw new Error("not yet implemented");
+  const argName = "argName";
+  function test(): void {
+    check.argDefined(undefined, argName);
+  }
+  expect(test).toThrow(InvalidArgError);
+  expect(test).toThrow(/.*undefined.*/);
+  expect(test).toThrow(new RegExp(`.*${argName}.*`));
 });
 
-test("check.argNotNull(arg, argName) should not throw any error if arg is not null", () => {
-  // FIXME: not yet implemented
-  throw new Error("not yet implemented");
+test.each`
+  arg
+  ${1}
+  ${"string value"}
+  ${undefined}
+  ${{ one: 1, two: "two" }}
+`("check.argNotNull($arg, argName) should not throw any error", ({ arg }) => {
+  check.argNotNull(arg, "arg");
 });
 
 test("check.argNotNull(null, argName) should throw IllegalArgError", () => {
-  // FIXME: not yet implemented
-  throw new Error("not yet implemented");
+  const argName = "arg";
+  function test(): void {
+    check.argNotNull(null, argName);
+  }
+  expect(test).toThrow(InvalidArgError);
+  expect(test).toThrow(/.*null.*/);
+  expect(test).toThrow(new RegExp(`.*${argName}.*`));
 });
 
-test("check.argDefinedAndNotNull(arg, argName) should not throw any error if arg is defined and not null", () => {
-  check.argDefinedAndNotNull("string value", "arg");
+test.each`
+  arg
+  ${1}
+  ${"string value"}
+  ${{ one: 1, two: "two" }}
+`("check.argDefinedAndNotNull($arg, argName) should not throw any error", ({ arg }) => {
+  check.argDefinedAndNotNull(arg, "arg");
 });
 
-test("check.argDefinedAndNotNull(undefined, argName) should throw IllegalArgError", () => {
+test.each`
+  arg
+  ${null}
+  ${undefined}
+`("check.argDefinedAndNotNull($arg, argName) should throw IllegalArgError", ({ arg }) => {
   const argName = "arg";
   function test(): void {
     check.argDefinedAndNotNull(undefined, argName);
   }
   expect(test).toThrow(InvalidArgError);
-  expect(test).toThrow(new RegExp(`.*undefined.*`));
+  expect(test).toThrow(/.*(undefined|null).*/);
   expect(test).toThrow(new RegExp(`.*${argName}.*`));
 });
 
-test("check.argDefinedAndNotNull(null, argName) should throw IllegalArgError", () => {
+test.each`
+  arg
+  ${"string value"}
+  ${[1, "two", 3]}
+  ${new Set<number>([1, 2, 3])}
+  ${new Map<number, string>([[1, "one"], [2, "two"]])}
+`("check.argNotEmpty($arg, argName) should not throw any error", ({ arg }) => {
+  check.argNotEmpty(arg, "arg");
+});
+
+test.each`
+  arg
+  ${undefined}
+  ${null}
+  ${""}
+  ${[]}
+  ${new Set<number>()}
+  ${new Map<number, string>()}
+`("check.argNotEmpty($arg, argName) should throw IllegalArgError", ({ arg }) => {
   const argName = "arg";
   function test(): void {
-    check.argDefinedAndNotNull(null, argName);
+    check.argNotEmpty(arg, argName);
   }
   expect(test).toThrow(InvalidArgError);
-  expect(test).toThrow(new RegExp(`.*null.*`));
+  expect(test).toThrow(/.*(undefined|null|empty).*/);
   expect(test).toThrow(new RegExp(`.*${argName}.*`));
-});
-
-test("check.argNotEmpty(arg, argName) should not throw any error if arg defined and not null and not empty", () => {
-  // FIXME: not yet implemented
-  throw new Error("not yet implemented");
-});
-
-test("check.argNotEmpty(arg, argName) should not throw IllegalArgError if arg undefined or null or empty", () => {
-  // FIXME: not yet implemented
-  throw new Error("not yet implemented");
 });
 
 test("check.state(true, msg) should not throw any error", () => {

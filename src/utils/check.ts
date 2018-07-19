@@ -18,11 +18,8 @@ export function argDefinedAndNotNull<T>(argVal: T | undefined | null, argName: s
 }
 
 export function argNotEmpty(argVal: string | undefined | null, argName: string): void;
-export function argNotEmpty<T>(
-  argVal: T[] | ReadonlyArray<T> | Set<T> | ReadonlySet<T> | undefined | null,
-  argName: string,
-): void;
-export function argNotEmpty<K, V>(argVal: Map<K, V> | ReadonlyMap<K, V> | undefined | null, argName: string): void;
+export function argNotEmpty<T>(argVal: ReadonlyArray<T> | ReadonlySet<T> | undefined | null, argName: string): void;
+export function argNotEmpty<K, V>(argVal: ReadonlyMap<K, V> | undefined | null, argName: string): void;
 export function argNotEmpty(argVal: any | undefined | null, argName: string): void {
   argDefinedAndNotNull(argVal, argName);
 

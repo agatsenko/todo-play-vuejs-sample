@@ -13,6 +13,13 @@
     "member-access": [true, "no-public"],
     "one-line": [true, "check-open-brace", "check-whitespace"],
     "max-classes-per-file": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case",
+      "allow-leading-underscore"
+    ],
     
     "indent": [true, "spaces", 2],
     "interface-name": false,
