@@ -33,6 +33,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 
+// FIXME: need to remove this component
 @Component
 export default class HelloWorld extends Vue {
   @Prop() private msg!: string;
