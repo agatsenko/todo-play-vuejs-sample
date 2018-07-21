@@ -21,11 +21,10 @@ import App from "./app.vue";
 
 
 faLibrary.add(
+  // FIXME: need to remove
   fasCheckSquare,
   farCheckSquare,
   fabCcVisa,
-
-  // FIXME: need to remove
   fasSpinner,
   fasCoffee,
 );
