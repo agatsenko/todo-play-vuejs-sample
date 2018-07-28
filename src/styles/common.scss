@@ -1,6 +1,8 @@
 $nav-border-color: #e6e6e6;
 $nav-border: 1px solid $nav-border-color;
 
+$fa-icon-button-indent: 4px;
+
 %main-header {
   font-size: 1.1em;
   margin: 0 20px;
@@ -9,4 +11,12 @@ $nav-border: 1px solid $nav-border-color;
 
 .el-header {
   line-height: 60px;
+}
+
+.fa-left-icon-button {
+  margin-right: $fa-icon-button-indent;
+}
+
+.fa-left-icon-button {
+  margin-left: $fa-icon-button-indent;
 }

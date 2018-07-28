@@ -64,15 +64,28 @@ export const defaultTodoItemFactory = (spec: ITodoItemSpec): TodoItem => {
 // TodoList components
 
 export class TodoList {
+  private _name: string;
   private readonly _itemFactory: TodoItemFactory;
   private readonly _items: TodoItem[];
 
-  constructor(itemFactory: TodoItemFactory = defaultTodoItemFactory, items?: TodoItem[]) {
+  constructor(name: string, itemFactory: TodoItemFactory = defaultTodoItemFactory, items?: TodoItem[]) {
+    check.argNotEmpty(name, "name");
+
+    this._name = name;
     this._itemFactory = itemFactory;
     this._items = [];
     if (items !== undefined) {
       items.forEach(item => this.putItem(item));
     }
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  set name(name: string) {
+    check.argNotEmpty(name, "name");
+    this._name = name;
   }
 
   get size(): number {

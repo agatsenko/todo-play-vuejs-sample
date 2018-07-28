@@ -25,6 +25,7 @@ export default class SimpleTodoListComponent extends Vue {
   filter = new Filter();
 
   private todoList: TodoList = new TodoList(
+    "Simple TODO List",
     defaultTodoItemFactory,
     [
       new TodoItem("1", "First task"),

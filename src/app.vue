@@ -19,37 +19,7 @@
 </el-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import SimpleTodoListComponent from "@/components/simple-todo/todo-list";
-import SamplesComponent from "@/components/samples.vue";
-
-import { MenuItem } from "@/components/menu.ts";
-
-@Component({
-  components: {
-    SimpleTodoListComponent,
-    SamplesComponent,
-  },
-})
-export default class App extends Vue {
-  mainMenu: MenuItem[] = [
-    new MenuItem("1", "Simple TODO List", "simple-todo-list-component"),
-    new MenuItem("2", "ElementUI TODO List", "samples-component"),
-    new MenuItem("3", "Samples", "samples-component"),
-  ];
-
-  selectedMenuItem: MenuItem | null = this.defaultSelectedMenuItem;
-
-  get defaultSelectedMenuItem(): MenuItem {
-    return this.mainMenu[0];
-  }
-
-  selectMenu(index: string): void {
-    const foundItem = this.mainMenu.find(item => item.id === index);
-    this.selectedMenuItem = foundItem === undefined ? null : foundItem;
-  }
-}
+<script lang="ts" src="./app.ts">
 </script>
 
 <style lang="scss" scoped>

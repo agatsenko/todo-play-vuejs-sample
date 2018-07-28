@@ -66,7 +66,7 @@ test.each`
 // TodoList tests
 
 test("new TodoList(itemFactory) should create a new empty list", () => {
-  const list = new TodoList(defaultTodoItemFactory);
+  const list = new TodoList("test", defaultTodoItemFactory);
   expect(list.items.length).toBe(0);
 });
 
@@ -81,7 +81,7 @@ test("new TodoList(itemFactory, items) should create a new list with the specifi
   const items = [item1, item2_1, item2_2, item3];
   const expectedItems = [item1, item2_2, item3];
 
-  const list = new TodoList(defaultTodoItemFactory, items);
+  const list = new TodoList("test", defaultTodoItemFactory, items);
   expect(list.items).toEqual(expectedItems);
 });
 
@@ -91,6 +91,7 @@ test.each`
   ${"item 2"} | ${false}
 `("list.put(spec: ITodoItemSpec) should create a new item and add it to the list", (spec: ITodoItemSpec) => {
   const list = new TodoList(
+    "test",
     defaultTodoItemFactory,
     [
       defaultTodoItemFactory({description: "test item 1"}),
@@ -112,6 +113,7 @@ test(
   "todoList.put(item: TodoItem) should add the item to the list if the list dose not contain other item with same id",
   () => {
     const list = new TodoList(
+      "test",
       defaultTodoItemFactory,
       [
         new TodoItem("1", "desc1", true),
@@ -130,6 +132,7 @@ test("todoList.put(item: TodoItem) should replace the existing item with the sam
   const containingItem = new TodoItem("test-item", "test item", false);
   const newItem = new TodoItem("test-item", "new item", true);
   const list = new TodoList(
+    "test",
     defaultTodoItemFactory,
     [
       new TodoItem("1", "desc1", true),
@@ -148,6 +151,7 @@ test("todoList.put(item: TodoItem) should replace the existing item with the sam
 test("todoList.remove(id: string) should remove the item with the specified id", () => {
   const containingItem = new TodoItem("test-item", "test item", false);
   const list = new TodoList(
+    "test",
     defaultTodoItemFactory,
     [
       new TodoItem("1", "desc1", true),
@@ -168,6 +172,7 @@ test(
   () => {
     const id = "test-item";
     const list = new TodoList(
+      "test",
       defaultTodoItemFactory,
       [
         new TodoItem("1", "desc1", true),
@@ -186,6 +191,7 @@ test(
 test("todoList.remove(item: TodoItem) should remove the specified item if it is contained in the list", () => {
   const containingItem = new TodoItem("test-item", "test item", false);
   const list = new TodoList(
+    "test",
     defaultTodoItemFactory,
     [
       new TodoItem("1", "desc1", true),
@@ -207,6 +213,7 @@ test(
   () => {
     const notContainingItem = new TodoItem("test-item", "test item", false);
     const list = new TodoList(
+      "test",
       defaultTodoItemFactory,
       [
         new TodoItem("1", "desc1", true),
@@ -223,10 +230,11 @@ test(
 
 test.each`
   list
-  ${new TodoList(defaultTodoItemFactory, [new TodoItem("1", "desc", false), new TodoItem("2", "desc", true)])}
-  ${new TodoList(defaultTodoItemFactory)}
+  ${new TodoList("test", defaultTodoItemFactory, [new TodoItem("1", "desc", false), new TodoItem("2", "desc", true)])}
+  ${new TodoList("test", defaultTodoItemFactory)}
 `("todoList.clear() should remove the all items in list", ({ list }) => {
   const todoList = list as TodoList;
   todoList.clear();
   expect(todoList.items.length).toBe(0);
 });
+

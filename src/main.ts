@@ -6,6 +6,7 @@ import {
   faCheckSquare as fasCheckSquare,
   faSpinner as fasSpinner,
   faCoffee as fasCoffee,
+  faList as fasList,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faCheckSquare as farCheckSquare,
@@ -15,9 +16,11 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 
 import ElementUI from "element-ui";
+import locale from "element-ui/lib/locale/lang/en";
 import "element-ui/lib/theme-chalk/index.css";
+// import "./styles/element-variables.scss";
 
-import App from "./app.vue";
+import App from "@/app";
 import "@/styles/main.scss";
 
 
@@ -28,10 +31,11 @@ faLibrary.add(
   fabCcVisa,
   fasSpinner,
   fasCoffee,
+  fasList,
 );
 Vue.component("fa-icon", FontAwesomeIcon);
 
-Vue.use(ElementUI);
+Vue.use(ElementUI, { locale });
 
 Vue.config.productionTip = false;
 

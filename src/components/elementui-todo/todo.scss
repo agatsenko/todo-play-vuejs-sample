@@ -1,0 +1,18 @@
+@import "../../styles/common";
+
+#eui-main-header {
+  @extend %main-header;
+}
+
+#eui-todo-view .el-row[todo-list] {
+  margin: 12px 0;
+}
+
+#eui-todo-view .el-row[todo-list-content] {
+  margin: 8px 0;
+}
+
+.el-table .eui-completed-task-row {
+  text-decoration-line: line-through;
+  color: #BDBDBD;
+}
