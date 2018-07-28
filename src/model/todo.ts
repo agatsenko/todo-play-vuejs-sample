@@ -8,7 +8,7 @@ export class TodoItem {
   private _description: string;
   private _completed: boolean;
 
-  constructor(id: string, description: string, completed: boolean) {
+  constructor(id: string, description: string, completed: boolean = false) {
     check.argNotEmpty(id, "id");
     check.argNotEmpty(description, "description");
 
@@ -67,11 +67,11 @@ export class TodoList {
   private readonly _itemFactory: TodoItemFactory;
   private readonly _items: TodoItem[];
 
-  constructor(itemFactory: TodoItemFactory, items?: TodoItem[]) {
+  constructor(itemFactory: TodoItemFactory = defaultTodoItemFactory, items?: TodoItem[]) {
     this._itemFactory = itemFactory;
     this._items = [];
     if (items !== undefined) {
-      items.forEach((item) => this.putItem(item));
+      items.forEach(item => this.putItem(item));
     }
   }
 

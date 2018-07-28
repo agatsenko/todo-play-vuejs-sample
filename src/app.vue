@@ -4,60 +4,56 @@
     <el-container>
       <el-header id="main-header"><b>Vuejs TODO</b></el-header>
       <el-aside width="200px">
-        <el-menu id="main-menu" mode="vertical">
-          <el-menu-item index="1">Simple TODO List</el-menu-item>
-          <el-menu-item index="2">Element UI TODO List</el-menu-item>
+        <el-menu id="main-menu" mode="vertical" :default-active="defaultSelectedMenuItem.id" @select="selectMenu">
+          <el-menu-item v-for="item in mainMenu" :key="item.id" :index="item.id">
+            {{ item.title }}
+          </el-menu-item>
         </el-menu>
       </el-aside>
     </el-container>
   </el-aside>
 
   <el-main id="main-container">
-    <el-container>
-      <el-header>
-        <el-menu mode="horizontal">
-          <el-menu-item index="1">one</el-menu-item>
-          <el-menu-item index="2">two</el-menu-item>
-        </el-menu>
-      </el-header>
-      <el-main>
-        main <el-tooltip content="solid spinner"><fa-icon :icon="['fas', 'spinner']" :spin="true"/></el-tooltip><br>
-        <el-tooltip content="solid check squere"><fa-icon :icon="['fas', 'check-square']"/></el-tooltip><br>
-        <el-tooltip content="regular check squere"><fa-icon :icon="['far', 'check-square']"/></el-tooltip><br>
-        <el-tooltip content="solid cofee"><fa-icon :icon="['fas', 'coffee']" :spin="true" size="3x" pul="right" style="color: #b71c1c"/></el-tooltip><br>
-      </el-main>
-    </el-container>
+    <component v-if="selectedMenuItem !== null" :is="selectedMenuItem.componentName"/>
   </el-main>
-
 </el-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import SimpleTodoListComponent from "@/components/simple-todo/todo-list";
+import SamplesComponent from "@/components/samples.vue";
+
+import { MenuItem } from "@/components/menu.ts";
 
 @Component({
   components: {
+    SimpleTodoListComponent,
+    SamplesComponent,
   },
 })
 export default class App extends Vue {
+  mainMenu: MenuItem[] = [
+    new MenuItem("1", "Simple TODO List", "simple-todo-list-component"),
+    new MenuItem("2", "ElementUI TODO List", "samples-component"),
+    new MenuItem("3", "Samples", "samples-component"),
+  ];
+
+  selectedMenuItem: MenuItem | null = this.defaultSelectedMenuItem;
+
+  get defaultSelectedMenuItem(): MenuItem {
+    return this.mainMenu[0];
+  }
+
+  selectMenu(index: string): void {
+    const foundItem = this.mainMenu.find(item => item.id === index);
+    this.selectedMenuItem = foundItem === undefined ? null : foundItem;
+  }
 }
 </script>
 
-<style lang="scss">
-$navigation-border: 1px solid #e6e6e6;
-
-html body {
-  padding: 0;
-  margin: 0;
-  color: #2c3e50;
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.el-header {
-  line-height: 60px;
-}
+<style lang="scss" scoped>
+@import "./styles/common";
 
 #app {
   position: fixed;
@@ -66,7 +62,7 @@ html body {
 }
 
 #main-navigation {
-  border-right: $navigation-border;
+  border-right: $nav-border;
   width: 100%;
   height: 100%;
 }
@@ -76,9 +72,7 @@ html body {
 }
 
 #main-header {
-  font-size: 20px;
-  border-bottom: $navigation-border;
-  margin: 0 20px;
+  @extend %main-header;
 }
 
 #main-container {

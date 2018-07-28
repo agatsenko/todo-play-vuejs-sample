@@ -20,6 +20,8 @@
       "allow-pascal-case",
       "allow-leading-underscore"
     ],
+    "no-console": false,
+    "arrow-parens": [true, "ban-single-arg-parens"],
     
     "indent": [true, "spaces", 2],
     "interface-name": false,

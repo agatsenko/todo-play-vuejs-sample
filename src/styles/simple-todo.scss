@@ -1,0 +1,87 @@
+@import "common";
+
+$footer-color: #777;
+
+%stodo-footer-text {
+  font-size: 0.8em;
+  color: $footer-color;
+}
+
+.stodo .el-row {
+  padding: 6px 0;
+}
+
+input[type="text"].stodo-new-task {
+  width: 100%;
+}
+
+div.stodo-label {
+  text-align: right;
+}
+
+button.stodo-action {
+  width: 80px;
+}
+
+div.stodo-task-check {
+  text-align: right;
+}
+
+.stodo-footer {
+  @extend %stodo-footer-text;
+
+  border-top: $nav-border;
+  padding-top: 8px;
+}
+
+.stodo-footer-text {
+  text-align: left;
+}
+
+.stodo-footer-filter {
+  text-align: center;
+}
+
+.stodo-footer-filter ul {
+  margin: 0;
+	padding: 0;
+  list-style: none;
+  display: inline;
+}
+
+.stodo-footer-filter li {
+  display: inline;
+  margin: 0 3px;
+}
+
+.stodo-footer-filter li a {
+	padding: 4px 6px;
+	text-decoration: none;
+	border: 1px solid transparent;
+  border-radius: 3px;
+  color: $footer-color;
+  cursor: pointer;
+}
+
+.stodo-footer-filter li a:hover {
+	border-color: rgba(148, 49, 38, 0.2);
+}
+
+.stodo-footer-filter li a.selected {
+	border-color: rgba(148, 49, 38, 0.4);
+}
+
+.stodo-footer-clear-completed {
+  text-align: right;
+}
+
+.stodo-footer-clear-completed a,
+.stodo-footer-clear-completed a:active {
+	text-decoration: none;
+  cursor: pointer;
+  color: $footer-color;
+}
+
+.stodo-footer-clear-completed a:hover {
+	text-decoration: underline;
+}

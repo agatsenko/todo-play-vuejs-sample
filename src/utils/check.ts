@@ -1,7 +1,7 @@
 import { InvalidArgError, InvalidStateError } from "@/utils/errors";
 
 export function arg(condition: boolean, errMsg: () => string): void {
-  check(condition, (msg) => new InvalidArgError(msg), errMsg);
+  check(condition, msg => new InvalidArgError(msg), errMsg);
 }
 
 export function argDefined<T>(argVal: T | undefined, argName: string): void {

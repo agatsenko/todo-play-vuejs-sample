@@ -1,0 +1,12 @@
+$nav-border-color: #e6e6e6;
+$nav-border: 1px solid $nav-border-color;
+
+%main-header {
+  font-size: 1.1em;
+  margin: 0 20px;
+  border-bottom: $nav-border;
+}
+
+.el-header {
+  line-height: 60px;
+}
