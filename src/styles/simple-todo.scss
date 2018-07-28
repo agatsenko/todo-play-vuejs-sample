@@ -27,6 +27,11 @@ div.stodo-task-check {
   text-align: right;
 }
 
+.stodo-task-completed {
+  text-decoration-line: line-through;
+  color: #BDBDBD;
+}
+
 .stodo-footer {
   @extend %stodo-footer-text;
 

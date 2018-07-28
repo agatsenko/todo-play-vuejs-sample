@@ -12,7 +12,7 @@
           :md="smMiddleColSpan"
           :lg="mdMiddleColSpan"
           :xl="lgMiddleColSpan">
-    {{ todoItem.description }}
+    <div :class="{ 'stodo-task-completed': completed }">{{ todoItem.description }}</div>
   </el-col>
   <el-col :xs="smOuterColSpan"
           :sm="smOuterColSpan"

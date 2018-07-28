@@ -67,6 +67,7 @@ export default class SimpleTodoListComponent extends Vue {
   addNewItem(): void {
     if (this.canAddTask) {
       this.todoList.put({ description: this.newTaskDescription! });
+      this.newTaskDescription = "";
     }
   }
 
