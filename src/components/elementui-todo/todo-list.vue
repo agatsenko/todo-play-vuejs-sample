@@ -77,6 +77,6 @@
 
 #eui-todo-list-table-footer {
   font-size: 0.8em;
-  color: #C0C4CC;
+  color: #909399;
 }
 </style>
