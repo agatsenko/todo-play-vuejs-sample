@@ -18,6 +18,10 @@ export default class EuiTodoList extends Vue {
   editItemDialogVisible = false;
   itemToEdit: TodoItem | null = null;
 
+  get hasCompletedItems(): boolean {
+    return this.list.items.find(item => item.completed) !== undefined;
+  }
+
   get canAddItem(): boolean {
     return this.newItemDescription !== null && this.newItemDescription.length > 0;
   }
@@ -77,6 +81,23 @@ export default class EuiTodoList extends Vue {
 
   deleteItem(item: TodoItem): void {
     this.list.remove(item.id);
+  }
+
+  clearCompletedItems(): void {
+    this.
+      $confirm("Are you sure to delete the all completed tasks?", "Clear Completed Tsks").
+      then(() => {
+        for (let i = 0; i < this.list.items.length; ++i) {
+          const item = this.list.items[i];
+          if (item.completed) {
+            this.list.remove(item);
+            --i;
+          }
+        }
+      }).
+      catch(() => {
+        // do nothing
+      });
   }
 
   rowClassName(rowInfo: any): string {

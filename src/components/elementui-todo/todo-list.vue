@@ -4,8 +4,15 @@
     <div slot="header" class="eui-todo-list-header">
       <b>{{ list.name }}</b>
       <div>
-        <el-button size="mini" type="text" @click="renameList">Rename</el-button>
-        <el-button size="mini" type="text" @click="deleteList">Delete</el-button>
+        <el-button size="mini" type="text" @click="renameList">Rename List</el-button>
+        <el-button size="mini" type="text" @click="deleteList">Delete List</el-button>
+        <el-button 
+            size="mini" 
+            type="text"
+            :disabled="!hasCompletedItems"
+            @click="clearCompletedItems">
+          Clear Completed Tasks
+        </el-button>
       </div>
     </div>
     <div>
