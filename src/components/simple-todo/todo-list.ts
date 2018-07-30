@@ -4,6 +4,16 @@ import SimpleTodoItemComponent from "@/components/simple-todo/todo-list-item";
 import { TodoItem, TodoList, defaultTodoItemFactory } from "@/model/todo";
 import { Filter, FilterValue } from "@/components/simple-todo/filter";
 
+const todoList = new TodoList(
+  "Simple TODO List",
+  defaultTodoItemFactory,
+  [
+    new TodoItem("1", "First task"),
+    new TodoItem("2", "Second task"),
+    new TodoItem("3", "Thrid task"),
+    new TodoItem("4", "Fourth task"),
+  ],
+);
 
 @Component({
   components: {
@@ -24,16 +34,7 @@ export default class SimpleTodoListComponent extends Vue {
 
   filter = new Filter();
 
-  private todoList: TodoList = new TodoList(
-    "Simple TODO List",
-    defaultTodoItemFactory,
-    [
-      new TodoItem("1", "First task"),
-      new TodoItem("2", "Second task"),
-      new TodoItem("3", "Thrid task"),
-      new TodoItem("4", "Fourth task"),
-    ],
-  );
+  private todoList: TodoList = todoList;
 
   get todoItems(): ReadonlyArray<TodoItem> {
     let filteredItems: ReadonlyArray<TodoItem>;
@@ -52,7 +53,13 @@ export default class SimpleTodoListComponent extends Vue {
   }
 
   get itemsLeft(): number {
-    return this.todoList.items.filter(item => item.completed).length;
+    let count = 0;
+    this.todoList.items.forEach(item => {
+      if (!item.completed) {
+        ++count;
+      }
+    });
+    return count;
   }
 
   get canAddTask(): boolean {

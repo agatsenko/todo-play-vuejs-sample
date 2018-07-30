@@ -7,16 +7,23 @@
     <el-main>
       <el-row type="flex" justify="center">
         <el-col :span="12">
-          <el-input v-model.trim="newListName" size="mini" placeholder="input a name of list" autofocus clearable>
-             <template slot="prepend">New List</template>
-             <el-button slot="append" :disabled="!canAddList" @click="addList">Add</el-button>
+          <el-input
+              ref="newListInput" 
+              v-model.trim="newListName" 
+              size="mini" 
+              placeholder="input a name of list"
+              autofocus
+              clearable
+              @keydown.native.enter="addList">
+            <template slot="prepend">New List</template>
+            <el-button slot="append" :disabled="!canAddList" @click="addList">Add</el-button>
           </el-input>
         </el-col>
       </el-row>
 
       <el-row v-for="list in lists" :key="list.id" class="todo-list" type="flex" justify="center" todo-list>
         <el-col :span="12">
-          <ElementUITodoList :list="list"/>
+          <eui-todo-list :list="list" @deleteList="deleteList"/>
         </el-col>
       </el-row>
     </el-main>

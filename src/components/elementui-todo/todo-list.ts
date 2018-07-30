@@ -1,18 +1,35 @@
 import { Vue, Component, Prop } from "vue-property-decorator";
 import { TodoList, TodoItem } from "@/model/todo";
 import { ElInput } from "element-ui/types/input";
+import EuiTodoListEditDialog from "@/components/elementui-todo/todo-list-editor";
+import EuiTodoItemEditDialog from "@/components/elementui-todo/todo-item-editor";
 
-@Component
-export default class ElementUITodoList extends Vue {
+@Component({
+  components: {
+    EuiTodoListEditDialog,
+    EuiTodoItemEditDialog,
+  },
+})
+export default class EuiTodoList extends Vue {
   @Prop({ required: true }) list!: TodoList;
 
   newItemDescription: string | null = null;
 
-  showEditDialog = false;
+  editItemDialogVisible = false;
   itemToEdit: TodoItem | null = null;
 
   get canAddItem(): boolean {
     return this.newItemDescription !== null && this.newItemDescription.length > 0;
+  }
+
+  get activeItemsCount(): number {
+    let activeCount = 0;
+    this.list.items.forEach(item => {
+      if (!item.completed) {
+        ++activeCount;
+      }
+    });
+    return activeCount;
   }
 
   get items(): ReadonlyArray<TodoItem> {
@@ -26,6 +43,26 @@ export default class ElementUITodoList extends Vue {
     });
   }
 
+  renameList(): void {
+    const dialog = this.$refs.renameListDialog as EuiTodoListEditDialog;
+    dialog.showDialog(this.list);
+  }
+
+  deleteList(): void {
+    this.
+      $confirm(`Are you sure to delete '${this.list.name}' list?`, "Delete List").
+      then(() => {
+        this.$emit("deleteList", this.list);
+      }).
+      catch(() => {
+        // do nothing
+      });
+  }
+
+  filterItems(completed: boolean, item: TodoItem): boolean {
+    return item.completed === completed;
+  }
+
   addItem(): void {
     if (this.canAddItem) {
       this.list.put({ description: this.newItemDescription! });
@@ -34,8 +71,8 @@ export default class ElementUITodoList extends Vue {
   }
 
   editItem(item: TodoItem): void {
-    this.itemToEdit = item;
-    this.showEditDialog = true;
+    const dialog = this.$refs.itemEditDialog as EuiTodoItemEditDialog;
+    dialog.showDialog(item);
   }
 
   deleteItem(item: TodoItem): void {
