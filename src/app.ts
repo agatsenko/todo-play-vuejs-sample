@@ -1,18 +1,13 @@
 import { Component, Vue } from "vue-property-decorator";
 import { MenuItem } from "@/components/menu";
 
-@Component({
-  components: {
-    "simple-todo-list-component": () => import("@/components/simple-todo/todo-list"),
-    "eui-todo-view": () => import("@/components/elementui-todo/todo-view"),
-    "samples-component": () => import("@/components/samples.vue"),
-  },
-})
+@Component
 export default class App extends Vue {
   mainMenu: MenuItem[] = [
-    new MenuItem("1", "Simple TODO List", "simple-todo-list-component"),
-    new MenuItem("2", "ElementUI TODO", "eui-todo-view"),
-    new MenuItem("3", "Samples", "samples-component"),
+    new MenuItem("1", "Simple TODO List", "/simple-todo.html"),
+    new MenuItem("2", "ElementUI TODO", "/element-ui-todo.html"),
+    new MenuItem("3", "Samples", "/samples.html"),
+    new MenuItem("4", "Invalid Link", "/invlaid-link"),
   ];
 
   selectedMenuItem: MenuItem | null = this.defaultSelectedMenuItem;

@@ -20,6 +20,7 @@ import locale from "element-ui/lib/locale/lang/en";
 import "element-ui/lib/theme-chalk/index.css";
 // import "./styles/element-variables.scss";
 
+import router from "@/router";
 import App from "@/app";
 import "@/styles/main.scss";
 
@@ -40,5 +41,6 @@ Vue.use(ElementUI, { locale });
 Vue.config.productionTip = false;
 
 new Vue({
+  router,
   render: h => h(App),
 }).$mount("#app");

@@ -1,12 +1,12 @@
 export class MenuItem {
   private _id: string;
   private _title: string;
-  private _componentName: string;
+  private _path: string;
 
-  constructor(id: string, title: string, componentName: string) {
+  constructor(id: string, title: string, path: string) {
     this._id = id;
     this._title = title;
-    this._componentName = componentName;
+    this._path = path;
   }
 
   get id(): string {
@@ -17,11 +17,11 @@ export class MenuItem {
     return this._title;
   }
 
-  get componentName(): string {
-    return this._componentName;
+  get path(): string {
+    return this._path;
   }
 
   toString(): string {
-    return `${MenuItem.constructor.name} {id: ${this.id}, title: ${this.title}, componentName: ${this.componentName}}`;
+    return `${MenuItem.constructor.name} {id: ${this.id}, title: ${this.title}, path: ${this.path}}`;
   }
 }

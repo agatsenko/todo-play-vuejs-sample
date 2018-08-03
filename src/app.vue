@@ -4,8 +4,14 @@
     <el-container>
       <el-header id="main-header"><b>Vuejs TODO</b></el-header>
       <el-aside width="200px">
-        <el-menu id="main-menu" mode="vertical" :default-active="defaultSelectedMenuItem.id" @select="selectMenu">
-          <el-menu-item v-for="item in mainMenu" :key="item.id" :index="item.id">
+        <el-menu
+            id="main-menu" 
+            mode="vertical" 
+            :router="true"
+            :default-active="defaultSelectedMenuItem.path" 
+            @select="selectMenu"
+        >
+          <el-menu-item v-for="item in mainMenu" :key="item.id" :index="item.path">
             {{ item.title }}
           </el-menu-item>
         </el-menu>
@@ -14,7 +20,7 @@
   </el-aside>
 
   <el-main id="main-container">
-    <component v-if="selectedMenuItem !== null" :is="selectedMenuItem.componentName"/>
+    <router-view/>
   </el-main>
 </el-container>
 </template>
