@@ -1,23 +1,20 @@
-.DS_Store
-node_modules
-/dist
+logs
+target
 
-# local env files
-.env.local
-.env.*.local
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
 
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw*
-
-package-lock.json
+/client/.vscode
+/client/dist
+/client/node_modules
+/client/.DS_Store
+/client/.env.local
+/client/.env.*.local
+/client/npm-debug.log*
+/client/yarn-debug.log*
+/client/yarn-error.log*
+/client/package-lock.json
