@@ -19,3 +19,6 @@ target
 /client/yarn-debug.log*
 /client/yarn-error.log*
 /client/package-lock.json
+
+/app/views/index-client.scala.html
+/public/client/*
