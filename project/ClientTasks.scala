@@ -4,6 +4,7 @@
   */
 import java.nio.file.{Files, Path, Paths}
 
+import Loan.using
 import NpmTasks.npmRun
 
 object ClientTasks {
@@ -11,7 +12,7 @@ object ClientTasks {
     npmRun(clientProjectPath.toAbsolutePath.toString, "sbt:clean")
 
     if (Files.exists(assetsDirPath)) {
-      Files.newDirectoryStream(assetsDirPath).forEach(p => FilesUtil.delete(p))
+      using(Files.newDirectoryStream(assetsDirPath))(_.forEach(p => FilesUtil.delete(p)))
     }
     FilesUtil.delete(indexHtmlDestPath)
   }
@@ -28,7 +29,7 @@ object ClientTasks {
     if (!Files.exists(assetsDirPath)) {
       Files.createDirectories(assetsDirPath)
     }
-    FilesUtil.copy(
+    FilesUtil.copyDir(
       srcDirPath = clientDistDirPath,
       destDirPath = assetsDirPath,
       exclude = path => path.getFileName == srcIndexHtmlName
@@ -38,6 +39,6 @@ object ClientTasks {
     if (!Files.exists(destIndexHtmlPath.getParent)) {
       Files.createDirectories(destIndexHtmlPath.getParent)
     }
-    FilesUtil.copy(clientDistDirPath.resolve(srcIndexHtmlName), destIndexHtmlPath)
+    FilesUtil.copyWithReplace(clientDistDirPath.resolve(srcIndexHtmlName), destIndexHtmlPath)
   }
 }

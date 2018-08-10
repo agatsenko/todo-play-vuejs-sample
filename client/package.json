@@ -13,7 +13,7 @@
     "test:unit": "vue-cli-service test:unit",
     "sbt:clean": "cross-conf-env rimraf $npm_package_config_distPath",
     "sbt:lint": "vue-cli-service lint --no-fix",
-    "sbt:compile-only": "cross-conf-env vue-cli-service build --dest $npm_package_config_distPath --no-clean",
+    "sbt:compile-only": "cross-conf-env vue-cli-service build --dest $npm_package_config_distPath",
     "sbt:compile": "npm-run-all sbt:lint sbt:compile-only",
     "sbt:test": "vue-cli-service test:unit"
   },
@@ -27,7 +27,8 @@
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@types/jest": "^23.1.4",

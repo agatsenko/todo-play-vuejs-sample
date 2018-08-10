@@ -84,13 +84,7 @@ clientClean := {
     Paths.get(clientDestIndexHtmlPath.value)
   )
 }
-//clean := (clean dependsOn clientClean).value
-clean := {
-  val scalaClean = clean.value
-  Thread.sleep(20000)
-  clientClean.value
-  scalaClean
-}
+clean := (clean dependsOn clientClean).value
 
 clientCompile := {
   ClientTasks.compile(
@@ -101,4 +95,5 @@ clientCompile := {
     Paths.get(clientDestIndexHtmlPath.value),
   )
 }
+parallelExecution in (compile in Compile) := false
 (compile in Compile) := ((compile in Compile) dependsOn clientCompile).value
