@@ -9,7 +9,7 @@ clientProjectPath := "./client"
 clientDistDirPath := "./client/dist"
 clientAssetsDirDestPath := "./public/client"
 clientSrcIndexHtmlName := "index.html"
-clientDestIndexHtmlPath := "./app/views/index-client.scala.html"
+clientDestIndexHtmlPath := "./app/views/index_client.scala.html"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
