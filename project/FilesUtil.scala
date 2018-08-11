@@ -66,4 +66,10 @@ object FilesUtil {
       }
     }
   }
+
+  object ImplicitConverters {
+    implicit def strToPath(str: String): Path = {
+      Paths.get(str)
+    }
+  }
 }

@@ -41,4 +41,8 @@ object ClientTasks {
     }
     FilesUtil.copyWithReplace(clientDistDirPath.resolve(srcIndexHtmlName), destIndexHtmlPath)
   }
+
+  def test(clientProjectPath: Path): Unit = {
+    npmRun(clientProjectPath.toAbsolutePath.toString, "sbt:test")
+  }
 }

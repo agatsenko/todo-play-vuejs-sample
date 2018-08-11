@@ -1,5 +1,3 @@
-import java.nio.file.Paths
-
 name := """todo-play-vuejs-sample"""
 organization := "com.agat"
 
@@ -23,8 +21,6 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "com.agat.binders._"
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // custom setting keys
@@ -76,24 +72,67 @@ npmRun := {
 
 lazy val clientClean = taskKey[Unit]("deletes client files produced by build")
 lazy val clientCompile = taskKey[Unit]("compiles client sources and deliver their to play dirs")
+lazy val clientTest = taskKey[Unit]("runs tests of client project")
 
 clientClean := {
+  import FilesUtil.ImplicitConverters.strToPath
+
   ClientTasks.clean(
-    Paths.get(clientProjectPath.value),
-    Paths.get(clientAssetsDirDestPath.value),
-    Paths.get(clientDestIndexHtmlPath.value)
+    clientProjectPath.value,
+    clientAssetsDirDestPath.value,
+    clientDestIndexHtmlPath.value
   )
 }
-clean := (clean dependsOn clientClean).value
 
 clientCompile := {
+  import FilesUtil.ImplicitConverters.strToPath
+
   ClientTasks.compile(
-    Paths.get(clientProjectPath.value),
-    Paths.get(clientDistDirPath.value),
-    Paths.get(clientAssetsDirDestPath.value),
-    Paths.get(clientSrcIndexHtmlName.value),
-    Paths.get(clientDestIndexHtmlPath.value),
+    clientProjectPath.value,
+    clientDistDirPath.value,
+    clientAssetsDirDestPath.value,
+    clientSrcIndexHtmlName.value,
+    clientDestIndexHtmlPath.value,
   )
 }
-parallelExecution in (compile in Compile) := false
-(compile in Compile) := ((compile in Compile) dependsOn clientCompile).value
+
+clientTest := {
+  import FilesUtil.ImplicitConverters.strToPath
+
+  ClientTasks.test(clientProjectPath.value)
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// client & server tasks
+
+lazy val cleanFull = taskKey[Unit]("runs 'clientClean' and 'clean' tasks")
+lazy val compileFull = taskKey[Unit]("runs 'clientCompile' and 'compile' tasks")
+lazy val testFull = taskKey[Unit]("runs 'test' and 'clientTest' tasks")
+lazy val build = taskKey[Unit]("runs the following tasks: clientClean, clean, clientCompile, compile, clientTest, test")
+
+cleanFull := {
+  clean.value
+  clientClean.value
+}
+
+compileFull := {
+  Def.sequential(
+    clientCompile,
+    (compile in Compile)
+  ).value
+}
+
+testFull := {
+  Def.sequential(
+    clientTest,
+    test in Test,
+  ).value
+}
+
+build := {
+  Def.sequential(
+    cleanFull,
+    compileFull,
+    testFull,
+  ).value
+}
