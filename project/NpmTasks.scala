@@ -4,6 +4,8 @@
   */
 import scala.sys.process.ProcessBuilder
 
+import java.nio.file.{Files, Paths}
+
 import ShellCommand._
 import sbt.complete.DefaultParsers._
 import sbt.complete.Parser
@@ -17,8 +19,10 @@ object NpmTasks {
   def npm(npmProjectPath: String, args: Seq[String], errorMsg: Int => Option[String] = _ => None): Unit = {
     import Implicits.strToPathOpt
 
+    val  absNpmProjectPath = Paths.get(npmProjectPath).toAbsolutePath.toString
+    println(s"$absNpmProjectPath> npm ${args.mkString(" ")}")
     runShellCmd(
-      shellCmd(Seq("npm") ++ args, npmProjectPath),
+      shellCmd(Seq("npm") ++ args, absNpmProjectPath),
       returnCode => errorMsg(returnCode) match {
         case msgOpt: Some[String] => msgOpt
         case _ => Some(s"the npm task has been failed with #$returnCode return code")
@@ -33,23 +37,14 @@ object NpmTasks {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // npm install task
 
-  def npmInstall(npmProjectPath: String): Unit = {
-    npm(
-      npmProjectPath,
-      "install",
-      (returnCode: Int) => Some(s"'npm install' has been failed with #$returnCode return code")
-    )
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // npm update task
-
-  def npmUpdate(npmProjectPath: String): Unit = {
-    npm(
-      npmProjectPath,
-      "update",
-      (returnCode: Int) => Some(s"'npm update' has been failed with #$returnCode return code")
-    )
+  def npmInstallIfNeed(npmProjectPath: String): Unit = {
+    if (!Files.exists(Paths.get(npmProjectPath, "node_modules"))) {
+      npm(
+        npmProjectPath,
+        Seq("install"),
+        (returnCode: Int) => Some(s"'npm install' has been failed with #$returnCode return code")
+      )
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

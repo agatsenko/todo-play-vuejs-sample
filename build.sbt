@@ -3,18 +3,29 @@ organization := "com.agat"
 
 version := "0.1.0"
 
-clientProjectPath := "./client"
-clientDistDirPath := "./client/dist"
-clientAssetsDirDestPath := "./public/client"
-clientSrcIndexHtmlName := "index.html"
-clientDestIndexHtmlPath := "./app/views/index_client.scala.html"
-
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.12.6"
 
-libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+// compile dependencies
+libraryDependencies ++= Seq(
+  guice,
+  "com.h2database" % "h2" % "1.4.197",
+  "com.typesafe.slick" %% "slick" % "3.2.3",
+  "com.typesafe.play" %% "play-slick" % "3.0.3",
+  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.3",
+)
+
+// test dependencies
+libraryDependencies ++= Seq(
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+)
+
+clientProjectPath := "./client"
+clientDistDirPath := "./client/dist"
+clientAssetsDirDestPath := "./public/todo"
+clientSrcIndexHtmlName := "index.html"
+clientDestIndexHtmlPath := "./app/views/todo.scala.html"
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.agat.controllers._"
@@ -43,19 +54,10 @@ npm := {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // npm install task
 
-lazy val npmInstall = taskKey[Unit]("runs 'npm install' in the npm project dir")
+lazy val npmInstallIfNeed = taskKey[Unit]("run 'npm install' if node_modules dir is absent in client project")
 
-npmInstall := {
-  NpmTasks.npmInstall(clientProjectPath.value)
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// npm update task
-
-lazy val npmUpdate = taskKey[Unit]("runs 'npm update' in the npm project dir")
-
-npmUpdate := {
-  NpmTasks.npmUpdate(clientProjectPath.value)
+npmInstallIfNeed := {
+  NpmTasks.npmInstallIfNeed(clientProjectPath.value)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +120,7 @@ cleanFull := {
 compileFull := {
   Def.sequential(
     clientCompile,
-    (compile in Compile)
+    compile in Compile
   ).value
 }
 
