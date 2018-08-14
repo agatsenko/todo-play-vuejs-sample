@@ -9,12 +9,16 @@ GET     /                           controllers.HomeController.index
 # todo routes
 GET     /todo/$path<(.*\.html)?>    controllers.TodoController.index(path)
 
-# todo api routes
-GET    /api/todo/lists              controllers.TodoApiController.getLists
-GET    /api/todo/lists/:listId      controllers.TodoApiController.getList(listId)
-POST   /api/todo/lists              controllers.TodoApiController.addList()
-PUT    /api/todo/lists              controllers.TodoApiController.updateList()
-DELETE /api/todo/lists/:listId      controllers.TodoApiController.removeList(listId)
+# todo api slick routes
+GET    /api/todo/slick/v1/lists                            controllers.api.todo.slick.v1.TodoApiController.getLists
+GET    /api/todo/slick/v1/lists/:listId                    controllers.api.todo.slick.v1.TodoApiController.getList(listId)
+POST   /api/todo/slick/v1/lists                            controllers.api.todo.slick.v1.TodoApiController.addList()
+PUT    /api/todo/slick/v1/lists                            controllers.api.todo.slick.v1.TodoApiController.updateList()
+DELETE /api/todo/slick/v1/lists/:listId                    controllers.api.todo.slick.v1.TodoApiController.removeList(listId)
+GET    /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.slick.v1.TodoApiController.getTasks(listId)
+GET    /api/todo/slick/v1/lists/:listId/tasks/:taskId      controllers.api.todo.slick.v1.TodoApiController.getTask(listId, taskId)
+
+# todo api scalikejdbc routes
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /todo/*file                 controllers.Assets.at(path = "/public/todo", file)

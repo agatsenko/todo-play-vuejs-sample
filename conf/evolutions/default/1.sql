@@ -1,6 +1,6 @@
 # --- !Ups
 
-create table todo_lists (
+create table if not exists todo_lists (
   id uuid not null,
   name varchar(50) not null,
 
@@ -8,7 +8,7 @@ create table todo_lists (
 )
 ;
 
-create table todo_items (
+create table if not exists todo_items (
   id uuid not null,
   list_id uuid not null,
   description varchar(500) not null,
@@ -19,7 +19,7 @@ create table todo_items (
 )
 ;
 
-# --- !Downs
+--# --- !Downs
 
-drop table todo_items if exists;
-drop table todo_lists if exists;
+--drop table todo_items if exists;
+--drop table todo_lists if exists;
