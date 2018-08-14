@@ -3,8 +3,8 @@
   * Created: 2018-08-14
   */
 import com.google.inject.{AbstractModule, Scopes}
-import model.TodoListRepo
-import persistence.slick.h2.SlickH2TodoListRepo
+import model.v1.TodoListRepo
+import persistence.slick.h2.v1.SlickH2TodoListRepo
 
 class Module extends AbstractModule{
   override def configure(): Unit = {

@@ -11,7 +11,8 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.{Inject, Singleton}
 
-import model.{TodoList, TodoListRepo, TodoTask}
+import model.v1.{TodoList, TodoListRepo, TodoTask}
+import model.{TodoListRepo, TodoTask}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}

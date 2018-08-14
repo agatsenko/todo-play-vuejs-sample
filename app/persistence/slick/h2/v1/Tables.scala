@@ -2,11 +2,11 @@
   * Author: Alexander Gatsenko (alexandr.gatsenko@gmail.com)
   * Created: 2018-08-14
   */
-package persistence.slick.h2
+package persistence.slick.h2.v1
 
 import java.util.UUID
 
-import model.TodoList
+import model.v1.TodoList
 import slick.jdbc.JdbcProfile
 
 trait Tables {

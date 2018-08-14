@@ -2,7 +2,7 @@
   * Author: Alexander Gatsenko (alexandr.gatsenko@gmail.com)
   * Created: 2018-08-14
   */
-package model
+package model.v1
 
 import java.util.UUID
 

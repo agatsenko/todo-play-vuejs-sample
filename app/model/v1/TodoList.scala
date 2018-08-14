@@ -1,8 +1,8 @@
 /**
   * Author: Alexander Gatsenko (alexandr.gatsenko@gmail.com)
-  * Created: 2018-08-13
+  * Created: 2018-08-14
   */
-package model
+package model.v1
 
 import java.util.UUID
 
@@ -23,4 +23,3 @@ case class TodoList(id: UUID, name: String) {
   // hide copy method
   private def copy(id: UUID, name: String): TodoList = throw new UnsupportedOperationException
 }
-

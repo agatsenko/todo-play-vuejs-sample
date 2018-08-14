@@ -2,14 +2,14 @@
   * Author: Alexander Gatsenko (alexandr.gatsenko@gmail.com)
   * Created: 2018-08-14
   */
-package persistence.slick.h2
+package persistence.slick.h2.v1
 
 import scala.concurrent.{ExecutionContext, Future}
 
 import java.util.UUID
 import javax.inject.Inject
 
-import model.{TodoList, TodoListRepo}
+import model.v1.{TodoList, TodoListRepo}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.JdbcProfile
 
