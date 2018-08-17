@@ -4,26 +4,40 @@
   */
 package model.v1
 
+import scala.concurrent.ExecutionContext
+
 import java.util.UUID
 
-case class TodoTask(id: UUID, listId: UUID, description: String, completed: Boolean = false) {
-  def modify(description: String = this.description, completed: Boolean = this.completed): TodoTask =
-    if (this.description == description && this.completed == completed)
-      this
-    else
-      TodoTask(id, listId, description, completed)
+case class TodoTask(id: UUID, listId: UUID, description: String, completed: Boolean = false)
 
-  override def equals(obj: Any): Boolean = {
-    if (!canEqual(obj)) {
-      return false
-    }
+object TodoTask {
+  val profile = slick.jdbc.H2Profile
 
-    val item = obj.asInstanceOf[TodoTask]
-    if (this eq item) true else id == item.id
+  import profile.api._
+
+  def findByListId(listId: UUID): DBIO[Seq[TodoTask]] = Query.findByListId(listId).result
+
+  def findByListIdAndTaskId(listId: UUID, taskId: UUID): DBIO[Option[TodoTask]] =
+    Query.findByListIdAndTaskId(listId, taskId).result.headOption
+
+  def save(task: TodoTask)(implicit ec: ExecutionContext): DBIO[TodoTask] =
+    (for(_ <- Query.tasks.insertOrUpdate(task)) yield task).transactionally
+
+  def remove(listId: UUID, taskId: UUID): DBIO[Int] = Query.findByListIdAndTaskId(listId, taskId).delete.transactionally
+
+  class TodoTaskTable(tag: Tag) extends Table[TodoTask](tag, "TODO_TASKS") {
+    def id: Rep[UUID] = column[UUID]("ID", O.PrimaryKey)
+    def listId: Rep[UUID] = column[UUID]("LIST_ID")
+    def description: Rep[String] = column[String]("DESCRIPTION", O.Length(1000))
+    def completed: Rep[Boolean] = column[Boolean]("COMPLETED")
+
+    def * = (id, listId, description, completed) <> ((TodoTask.apply _).tupled, TodoTask.unapply)
   }
 
-  override def hashCode: Int = id.hashCode
+  private[v1] object Query {
+    val tasks = TableQuery[TodoTaskTable]
 
-  // hide copy method
-  private def copy(): Unit = throw new UnsupportedOperationException
+    def findByListId = tasks.findBy(_.listId)
+    def findByListIdAndTaskId(listId: UUID, taskId: UUID) = tasks.filter(t => t.listId === listId && t.id === taskId)
+  }
 }

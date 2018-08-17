@@ -4,22 +4,44 @@
   */
 package model.v1
 
+import scala.concurrent.ExecutionContext
+
 import java.util.UUID
 
-case class TodoList(id: UUID, name: String) {
-  def rename(newName: String): TodoList = if (name == newName) this else TodoList(id, newName)
+case class TodoList(id: UUID, name: String)
 
-  override def equals(obj: Any): Boolean = {
-    if (!canEqual(obj)) {
-      return false
-    }
+object TodoList {
+  val profile = slick.jdbc.H2Profile
 
-    val list = obj.asInstanceOf[TodoList]
-    if (this.eq(list)) true else id == list.id
+  import profile.api._
+
+  def findById(id: UUID): DBIO[Option[TodoList]] = Query.findById(id).result.headOption
+
+  def findAll: DBIO[Seq[TodoList]] = Query.findAll.result
+
+  def save(list: TodoList)(implicit ec: ExecutionContext): DBIO[TodoList] =
+    (for (_ <- Query.lists.insertOrUpdate(list)) yield list).transactionally
+
+  def remove(id: UUID)(implicit ec: ExecutionContext): DBIO[Int] = {
+    (for {
+      tasksCount <- TodoTask.Query.findByListId(id).delete
+      listsCount <- Query.findById(id).delete
+    } yield {
+      tasksCount + listsCount
+    }).transactionally
   }
 
-  override def hashCode(): Int = id.hashCode
+  class TodoListTable(tag: Tag) extends Table[TodoList](tag, "TODO_LISTS") {
+    def id: Rep[UUID] = column[UUID]("ID", O.PrimaryKey)
+    def name: Rep[String] = column[String]("NAME", O.Length(50))
 
-  // hide copy method
-  private def copy(id: UUID, name: String): TodoList = throw new UnsupportedOperationException
+    def * = (id, name) <> ((TodoList.apply _).tupled, TodoList.unapply)
+  }
+
+  private[v1] object Query {
+    val lists = TableQuery[TodoListTable]
+
+    def findById = lists.findBy(_.id)
+    def findAll = lists
+  }
 }

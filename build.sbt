@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "1.4.+",
   "com.typesafe.slick" %% "slick" % "3.2.3",
   "com.typesafe.play" %% "play-slick" % "3.0.3",
-  "com.typesafe.play" %% "play-slick-evolutions" % "3.0.3",
+  "com.zaxxer" % "HikariCP" % "2.7.+",
 )
 
 // test dependencies

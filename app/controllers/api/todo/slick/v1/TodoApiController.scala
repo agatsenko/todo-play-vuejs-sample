@@ -4,163 +4,122 @@
   */
 package controllers.api.todo.slick.v1
 
-import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.{Inject, Singleton}
 
-import model.v1.{TodoList, TodoListRepo, TodoTask}
+import model.v1.{TodoList, TodoTask}
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
+import slick.jdbc.JdbcProfile
 
 @Singleton
 class TodoApiController @Inject()(
     cc: ControllerComponents,
-    private val _listRepo: TodoListRepo)(
-    implicit ec: ExecutionContext) extends AbstractController(cc) {
-  private implicit val _listWrites: Writes[TodoList] = (list: TodoList) => Json.obj(
+    override protected val dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext) extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
+  private implicit val listWrites: Writes[TodoList] = (list: TodoList) => Json.obj(
     "id" -> list.id,
     "name" -> list.name
   )
 
-  private implicit val _listReads: Reads[TodoList] = (
+  private implicit val listReads: Reads[TodoList] = (
       (JsPath \ "id").read[UUID] and
       (JsPath \ "name").read[String]
-  )(TodoList.apply _)
+      ) (TodoList.apply _)
 
-  private implicit val _taskWrites: Writes[TodoTask] = (task: TodoTask) => Json.obj(
+  private implicit val taskWrites: Writes[TodoTask] = (task: TodoTask) => Json.obj(
     "id" -> task.id,
     "description" -> task.description,
     "completed" -> task.completed
   )
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // FIXME: need to remove after db access will be implemented
-
-  private def buildLists(): mutable.Map[UUID, TodoList] = {
-    import scala.collection.JavaConverters._
-
-    var listSeq = 0
-
-    def createListRecord(): (UUID, TodoList) = {
-      val id = UUID.randomUUID()
-      listSeq += 1
-      id -> TodoList(id, s"list $listSeq")
-    }
-
-    val listMap = new ConcurrentHashMap[UUID, TodoList]().asScala
-    listMap += createListRecord()
-    listMap += createListRecord()
-    listMap += createListRecord()
-    listMap += createListRecord()
-    listMap += createListRecord()
-    listMap += createListRecord()
-    listMap
-  }
-
-  private def buildMockTasks(lists: Iterable[TodoList]): mutable.Map[UUID, TodoTask] = {
-    import scala.collection.JavaConverters._
-
-    var taskSeq = 0
-
-    def createTaskRecord(list: TodoList) = {
-      val id = UUID.randomUUID()
-      taskSeq += 1
-      id -> TodoTask(id, list.id, s"description of task $taskSeq (listId: ${list.id})", (taskSeq & 1) == 0)
-    }
-
-    val taskMap = new ConcurrentHashMap[UUID, TodoTask]().asScala
-    lists.foreach(l => {
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-      taskMap += createTaskRecord(l)
-    })
-    taskMap
-  }
-
-  private val _mockLists = buildLists()
-  private val _mockTasks = buildMockTasks(_mockLists.values)
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   def getLists: Action[AnyContent] = Action.async { implicit req =>
-    _listRepo.getAll.map(lists => Ok(Json.toJson(lists)))
+    db.run(TodoList.findAll).map(lists => Ok(Json.toJson(lists)))
   }
 
   def getList(listId: String): Action[AnyContent] = Action.async { implicit req =>
-    _listRepo.getById(UUID.fromString(listId)).map {
+    db.run(TodoList.findById(UUID.fromString(listId))).map {
       case None => notFound(s"'$listId' list not found")
-      case Some(foundList) => Ok(Json.toJson(foundList))
+      case Some(list) => Ok(Json.toJson(list))
     }
   }
 
   def addList(): Action[JsValue] = Action(parse.json).async { implicit req =>
-    _listRepo.save(TodoList(UUID.randomUUID(), (req.body \ "name").as[String])).map(l => Ok(Json.toJson(l)))
+    db.run(TodoList.save(TodoList(UUID.randomUUID(), (req.body \ "name").as[String])).map(l => Ok(Json.toJson(l))))
   }
 
   def updateList(): Action[JsValue] = Action(parse.json).async { implicit req =>
     val list = req.body.validate[TodoList].get
-    _listRepo.exists(list.id).flatMap {
-      case true => _listRepo.save(list).map(l => Ok(Json.toJson(l)))
-      case false => Future(badRequest(s"'${list.id}' list not found"))
+    db.run(TodoList.findById(list.id)).flatMap {
+      case None => Future(badRequest(s"'${list.id}' list not found"))
+      case Some(foundList) => db.run(TodoList.save(foundList.copy(name = list.name))).map(l => Ok(Json.toJson(l)))
     }
   }
 
   def removeList(listId: String): Action[AnyContent] = Action.async { implicit req =>
-    val uuidListId = UUID.fromString(listId)
-    _listRepo.remove(uuidListId).map {
-      case true => Ok
-      case false => notFound(s"'$listId' list not found")
+    db.run(TodoList.remove(UUID.fromString(listId))).map {
+      case 0 => badRequest(s"'$listId' list not found")
+      case _ => Ok
     }
   }
 
-  def getTasks(listId: String) = Action { implicit req =>
-    val uuidListId = UUID.fromString(listId)
-    if (_mockLists.contains(uuidListId)) {
-      Ok(Json.toJson(_mockTasks.values.filter(uuidListId == _.listId)))
-    }
-    else {
-      notFound(s"'$listId' list not found")
+  def getTasks(listId: String): Action[AnyContent] = Action.async { implicit req =>
+    db.run(TodoTask.findByListId(UUID.fromString(listId))).map(t => Ok(Json.toJson(t)))
+  }
+
+  def getTask(listId: String, taskId: String): Action[AnyContent] = Action.async { implicit req =>
+    db
+        .run(TodoTask.findByListIdAndTaskId(UUID.fromString(listId), UUID.fromString(taskId)))
+        .map {
+          case None => notFound(s"task not found with specified listId = '$listId', taskId = '$taskId'")
+          case Some(task) => Ok(Json.toJson(task))
+        }
+  }
+
+  def addTask(listIdStr: String): Action[JsValue] = Action(parse.json).async { implicit req =>
+    val listId = UUID.fromString(listIdStr)
+    db.run(TodoList.findById(listId)).flatMap {
+      case None => Future(notFound(s"'$listId' list not found"))
+      case Some(list) => db
+          .run(
+            TodoTask.save(
+              TodoTask(
+                UUID.randomUUID(),
+                list.id,
+                (req.body \ "description").as[String],
+                (req.body \ "completed").as[Boolean]
+              )
+            )
+          ).map(t => Ok(Json.toJson(t)))
     }
   }
 
-  def getTask(listId: String, taskId: String) = Action { implicit req =>
-    val uuidListId = UUID.fromString(listId)
-    val uuidTaskId = UUID.fromString(taskId)
-    if (_mockLists.contains(uuidListId)) {
-      _mockTasks.values.filter(uuidListId == _.listId).find(uuidTaskId == _.id) match {
-        case None => notFound(s"'$taskId' task not found")
-        case Some(task) => Ok(Json.toJson(task))
-      }
+  def updateTask(listId: String): Action[JsValue] = Action(parse.json).async { implicit req =>
+    val task = TodoTask(
+      (req.body \ "id").as[UUID],
+      UUID.fromString(listId),
+      (req.body \ "description").as[String],
+      (req.body \ "completed").as[Boolean]
+    )
+    db.run(TodoTask.findByListIdAndTaskId(UUID.fromString(listId), task.id)).flatMap {
+      case None => Future(badRequest(s"task not found with specified listId = '$listId', taskId = '${task.id}'"))
+      case Some(foundTask) => db.run(
+        TodoTask
+            .save(foundTask.copy(description = task.description, completed = task.completed))
+            .map(t => Ok(Json.toJson(t)))
+      )
     }
-    else {
-      notFound(s"'$listId' list not found")
+  }
+
+  def removeTask(listId: String, taskId: String): Action[AnyContent] = Action.async { implicit req =>
+    db.run(TodoTask.remove(UUID.fromString(listId), UUID.fromString(taskId))).map {
+      case 0 => badRequest(s"task not found with specified listId = '$listId', taskId = '$taskId'")
+      case _ => Ok
     }
-  }
-
-  def addTask(listId: String) = Action(parse.json) { implicit req =>
-    // FIXME: not yet implemented
-    ???
-  }
-
-  def updateTask(listId: String) = Action(parse.json) { implicit req =>
-    // FIXME: not yet implemented
-    ???
-  }
-
-  def removeTask(listId: String) = Action(parse.json) { implicit req =>
-    // FIXME: not yet implemented
-    ???
   }
 
   private def jsonError(errorMsg: String, statusCode: Int) = Json.obj(
