@@ -3,14 +3,25 @@ organization := "com.agat"
 
 version := "0.1.0"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
 scalaVersion := "2.12.6"
+
+lazy val flyway = (project in file("modules/flyway")).
+    enablePlugins(FlywayPlugin).
+    settings(Common.projectSettings)
+
+lazy val core = (project in file("modules/core")).
+    enablePlugins(CodegenPlugin).
+    settings(Common.projectSettings)
+
+lazy val root = (project in file(".")).
+    enablePlugins(PlayScala).
+    aggregate(core).
+    dependsOn(core)
 
 // compile dependencies
 libraryDependencies ++= Seq(
   guice,
-  "com.h2database" % "h2" % "1.4.197",
+  "com.h2database" % "h2" % "1.4.+",
   "com.typesafe.slick" %% "slick" % "3.2.3",
   "com.typesafe.play" %% "play-slick" % "3.0.3",
   "com.typesafe.play" %% "play-slick-evolutions" % "3.0.3",
