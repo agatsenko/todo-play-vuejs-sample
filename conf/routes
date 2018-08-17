@@ -9,19 +9,24 @@ GET     /                           controllers.HomeController.index
 # todo routes
 GET     /todo/$path<(.*\.html)?>    controllers.TodoController.index(path)
 
-# todo api v1, that based on slick
-GET    /api/todo/slick/v1/lists                            controllers.api.todo.slick.v1.TodoApiController.getLists
-GET    /api/todo/slick/v1/lists/:listId                    controllers.api.todo.slick.v1.TodoApiController.getList(listId)
-POST   /api/todo/slick/v1/lists                            controllers.api.todo.slick.v1.TodoApiController.addList()
-PUT    /api/todo/slick/v1/lists                            controllers.api.todo.slick.v1.TodoApiController.updateList()
-DELETE /api/todo/slick/v1/lists/:listId                    controllers.api.todo.slick.v1.TodoApiController.removeList(listId)
-GET    /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.slick.v1.TodoApiController.getTasks(listId)
-GET    /api/todo/slick/v1/lists/:listId/tasks/:taskId      controllers.api.todo.slick.v1.TodoApiController.getTask(listId, taskId)
-POST   /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.slick.v1.TodoApiController.addTask(listId)
-PUT    /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.slick.v1.TodoApiController.updateTask(listId)
-DELETE /api/todo/slick/v1/lists/:listId/tasks/:taskId      controllers.api.todo.slick.v1.TodoApiController.removeTask(listId, taskId)
+# todo api v1 (based on slick)
+GET    /api/todo/slick/v1/lists                            controllers.api.todo.v1.TodoApiController.getLists
+GET    /api/todo/slick/v1/lists/:listId                    controllers.api.todo.v1.TodoApiController.getList(listId)
+POST   /api/todo/slick/v1/lists                            controllers.api.todo.v1.TodoApiController.addList()
+PUT    /api/todo/slick/v1/lists                            controllers.api.todo.v1.TodoApiController.updateList()
+DELETE /api/todo/slick/v1/lists/:listId                    controllers.api.todo.v1.TodoApiController.removeList(listId)
+GET    /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.v1.TodoApiController.getTasks(listId)
+GET    /api/todo/slick/v1/lists/:listId/tasks/:taskId      controllers.api.todo.v1.TodoApiController.getTask(listId, taskId)
+POST   /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.v1.TodoApiController.addTask(listId)
+PUT    /api/todo/slick/v1/lists/:listId/tasks              controllers.api.todo.v1.TodoApiController.updateTask(listId)
+DELETE /api/todo/slick/v1/lists/:listId/tasks/:taskId      controllers.api.todo.v1.TodoApiController.removeTask(listId, taskId)
 
-# todo api v2, that base on scalikejdbc
+# todo api v2 (base on scalikejdbc)
+GET    /api/todo/slick/v2/lists                            controllers.api.todo.v2.TodoApiController.getLists
+GET    /api/todo/slick/v2/lists/:listId                    controllers.api.todo.v2.TodoApiController.getList(listId)
+POST   /api/todo/slick/v2/lists                            controllers.api.todo.v2.TodoApiController.addList()
+PUT    /api/todo/slick/v2/lists                            controllers.api.todo.v2.TodoApiController.updateList()
+DELETE /api/todo/slick/v2/lists/:listId                    controllers.api.todo.v2.TodoApiController.removeList(listId)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /todo/*file                 controllers.Assets.at(path = "/public/todo", file)

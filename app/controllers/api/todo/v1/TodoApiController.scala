@@ -2,7 +2,7 @@
   * Author: Alexander Gatsenko (alexandr.gatsenko@gmail.com)
   * Created: 2018-08-12
   */
-package controllers.api.todo.slick.v1
+package controllers.api.todo.v1
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,12 +14,13 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
+import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 
 @Singleton
 class TodoApiController @Inject()(
     cc: ControllerComponents,
-    override protected val dbConfigProvider: DatabaseConfigProvider)(
+    @NamedDatabase("v1") protected val dbConfigProvider: DatabaseConfigProvider)(
     implicit ec: ExecutionContext) extends AbstractController(cc) with HasDatabaseConfigProvider[JdbcProfile] {
   private implicit val listWrites: Writes[TodoList] = (list: TodoList) => Json.obj(
     "id" -> list.id,

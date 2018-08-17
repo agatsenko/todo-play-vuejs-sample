@@ -21,10 +21,15 @@ lazy val root = (project in file(".")).
 // compile dependencies
 libraryDependencies ++= Seq(
   guice,
+  jdbc,
   "com.h2database" % "h2" % "1.4.+",
   "com.typesafe.slick" %% "slick" % "3.2.3",
   "com.typesafe.play" %% "play-slick" % "3.0.3",
   "com.zaxxer" % "HikariCP" % "2.7.+",
+  "io.circe" %% "circe-core" % "0.9.3",
+  "io.circe" %% "circe-generic" % "0.9.3",
+  "io.circe" %% "circe-parser" % "0.9.3",
+  "com.dripower" %% "play-circe" % "2609.1",
 )
 
 // test dependencies
