@@ -9,7 +9,7 @@ import scalikejdbc._
 import com.agat.todo.core.model.{TodoList, TodoTask}
 
 object Mapping {
-  import com.agat.todo.core.infrastructure.persistence.scalikejdbc.ExtTypeBinders._
+  import com.agat.todo.core.infrastructure.persistence.scalikejdbc.ExtBinders._
 
   object TodoLists extends SQLSyntaxSupport[TodoList] {
     override val tableName: String = "todo_lists"

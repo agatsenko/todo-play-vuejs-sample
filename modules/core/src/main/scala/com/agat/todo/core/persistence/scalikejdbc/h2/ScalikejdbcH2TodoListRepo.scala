@@ -14,52 +14,58 @@ import com.agat.todo.core.model.{TodoList, TodoListRepo}
 import com.agat.todo.core.persistence.scalikejdbc.h2.Mapping._
 
 class ScalikejdbcH2TodoListRepo extends TodoListRepo with ScalikejdbcRepo {
+  import ScalikejdbcH2TodoListRepo._
+  import com.agat.todo.core.infrastructure.persistence.scalikejdbc.ExtBinders._
 
   override def getAll(implicit context: PersistContext): Seq[TodoList] = {
     withinSession { implicit session =>
-      val l = TodoLists.syntax("l")
-      sql"select ${l.result.*} from ${TodoLists.as(l)}".map(TodoLists(l)).list().apply().map(populateTasks)
+      withSQL {
+        select.from(TodoLists as lst)
+      }.map(TodoLists(lst)).list().apply().map(populateTasks)
     }
   }
 
   override def getById(id: UUID)(implicit context: PersistContext): Option[TodoList] = {
     withinSession { implicit session =>
-      val l = TodoLists.syntax("l")
-      sql"select ${l.result.*} from ${TodoLists.as(l)} where ${l.id} = $id"
-          .map(TodoLists(l))
-          .single()
-          .apply()
-          .map(populateTasks)
+      withSQL {
+        select.from(TodoLists as lst).where.eq(lst.id, id)
+      }.map(TodoLists(lst)).single().apply().map(populateTasks)
     }
   }
 
   override def save(list: TodoList)(implicit context: PersistContext): TodoList = {
     withinSession { implicit session =>
-      val (lc, tc) = (TodoLists.column, TodoTasks.column)
       sql"""
-        merge into ${TodoLists.table} (${lc.id}, ${lc.name})
-        key (${lc.id})
+        merge into ${TodoLists.table} (${lstClm.id}, ${lstClm.name})
+        key (${lstClm.id})
         values (${list.id}, ${list.name})
       """.update().apply()
 
-      sql"""
-        delete
-          from ${TodoTasks.table}
-          where ${tc.column(TodoTasks.listIdColumn)} = ${list.id}
-            and ${tc.id} not in (${list.tasks.map(t => t.id)})
-      """.update().apply()
-
-      for (task <- list.tasks) {
-        sql"""
-          merge into ${TodoTasks.table} (
-            ${tc.id},
-            ${tc.column(TodoTasks.listIdColumn)},
-            ${tc.description},
-            ${tc.completed}
-          )
-          key(${tc.id})
-          values (${task.id}, ${list.id}, ${task.description}, ${task.completed})
-        """.update().apply()
+      if (list.tasks.isEmpty) {
+        withSQL {
+          delete.from(TodoTasks).where.eq(tskClm.column(TodoTasks.listIdColumn), list.id)
+        }.update().apply()
+      }
+      else {
+        withSQL {
+          delete
+              .from(TodoTasks)
+              .where.eq(tskClm.column(TodoTasks.listIdColumn), list.id)
+              .and.not.in(tskClm.id, list.tasks.map(t => t.id).toSeq)
+        }.update().apply()
+        
+        for (task <- list.tasks) {
+          sql"""
+            merge into ${TodoTasks.table} (
+              ${tskClm.id},
+              ${tskClm.column(TodoTasks.listIdColumn)},
+              ${tskClm.description},
+              ${tskClm.completed}
+            )
+            key(${tskClm.id})
+            values (${task.id}, ${list.id}, ${task.description}, ${task.completed})
+          """.update().apply()
+        }
       }
 
       list
@@ -68,26 +74,29 @@ class ScalikejdbcH2TodoListRepo extends TodoListRepo with ScalikejdbcRepo {
 
   override def remove(id: UUID)(implicit context: PersistContext): Unit = {
     withinSession { implicit session =>
-      val (lc, tc) = (TodoLists.column, TodoTasks.column)
-      sql"delete from ${TodoTasks.table} where ${tc.column(TodoTasks.listIdColumn)} = $id".update().apply()
-      sql"delete from ${TodoLists.table} where ${lc.id} = $id".update().apply()
+      withSQL {
+        delete.from(TodoTasks).where.eq(tskClm.column(TodoTasks.listIdColumn), id)
+      }.update().apply()
+      withSQL {
+        delete.from(TodoLists).where.eq(lstClm.id, id)
+      }.update().apply()
     }
   }
 
   private def populateTasks(list: TodoList)(implicit session: DBSession): TodoList = {
-    val t = TodoTasks.syntax("t")
-    val tasks =
-      sql"""
-        select
-          ${t.result.id},
-          ${t.result.description},
-          ${t.result.completed}
-            from ${TodoTasks.as(t)}
-            where ${t.column(TodoTasks.listIdColumn)} = ${list.id}
-      """
-          .map(TodoTasks(t))
-          .list()
-          .apply()
+    val tasks = withSQL {
+      select(tsk.result.id, tsk.result.description, tsk.result.completed)
+          .from(TodoTasks as tsk)
+          .where.eq(tsk.column(TodoTasks.listIdColumn), list.id)
+    }.map(TodoTasks(tsk)).list().apply()
     list.copy(tasks = tasks.toSet)
   }
+}
+
+object ScalikejdbcH2TodoListRepo {
+  val lst = TodoLists.syntax("lst")
+  val lstClm = TodoLists.column
+
+  val tsk = TodoTasks.syntax("tsk")
+  val tskClm = TodoTasks.column
 }

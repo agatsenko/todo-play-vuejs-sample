@@ -8,7 +8,7 @@ import java.util.UUID
 
 import scalikejdbc.Binders
 
-object ExtTypeBinders {
+object ExtBinders {
   implicit val uuid: Binders[UUID] =
       Binders(_.getObject(_, classOf[UUID]))(_.getObject(_, classOf[UUID]))(v => (ps, idx) => ps.setObject(idx, v))
 }
