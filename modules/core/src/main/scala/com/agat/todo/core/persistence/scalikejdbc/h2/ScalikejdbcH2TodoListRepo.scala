@@ -33,6 +33,15 @@ class ScalikejdbcH2TodoListRepo extends TodoListRepo with ScalikejdbcRepo {
     }
   }
 
+  override def exists(id: UUID)(implicit context: PersistContext): Boolean = {
+    import sqls.count
+
+    withinSession { implicit session =>
+      withSQL {
+        select(count(lst.id)).from(TodoLists as lst).where.eq(lst.id, id)
+      }.map(_.long(1)).single().apply().get > 0
+    }
+  }
   override def save(list: TodoList)(implicit context: PersistContext): TodoList = {
     withinSession { implicit session =>
       sql"""
@@ -53,7 +62,7 @@ class ScalikejdbcH2TodoListRepo extends TodoListRepo with ScalikejdbcRepo {
               .where.eq(tskClm.column(TodoTasks.listIdColumn), list.id)
               .and.not.in(tskClm.id, list.tasks.map(t => t.id).toSeq)
         }.update().apply()
-        
+
         for (task <- list.tasks) {
           sql"""
             merge into ${TodoTasks.table} (

@@ -13,6 +13,8 @@ trait TodoListRepo {
 
   def getById(id: UUID)(implicit context: PersistContext): Option[TodoList]
 
+  def exists(id: UUID)(implicit context: PersistContext): Boolean
+
   def save(list: TodoList)(implicit context: PersistContext): TodoList
 
   def remove(id: UUID)(implicit context: PersistContext): Unit

@@ -23,10 +23,10 @@ DELETE /api/todo/slick/v1/lists/:listId/tasks/:taskId      controllers.api.todo.
 
 # todo api v2 (base on scalikejdbc)
 GET    /api/todo/slick/v2/lists                            controllers.api.todo.v2.TodoApiController.getLists
-GET    /api/todo/slick/v2/lists/:listId                    controllers.api.todo.v2.TodoApiController.getList(listId)
+GET    /api/todo/slick/v2/lists/:listId                   controllers.api.todo.v2.TodoApiController.getList(listId: java.util.UUID)
 POST   /api/todo/slick/v2/lists                            controllers.api.todo.v2.TodoApiController.addList()
 PUT    /api/todo/slick/v2/lists                            controllers.api.todo.v2.TodoApiController.updateList()
-DELETE /api/todo/slick/v2/lists/:listId                    controllers.api.todo.v2.TodoApiController.removeList(listId)
+DELETE /api/todo/slick/v2/lists/:listId                    controllers.api.todo.v2.TodoApiController.removeList(listId: java.util.UUID)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /todo/*file                 controllers.Assets.at(path = "/public/todo", file)

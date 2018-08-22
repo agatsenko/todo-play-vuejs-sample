@@ -36,10 +36,10 @@ private[scalikejdbc] class ScalikejdbcRootTxContext(
   override def close(): Unit = {
     Try {
       if (rollbackOnly) {
-        commit()
+        tx.rollback()
       }
       else {
-        tx.rollback()
+        commit()
       }
     }.eventually(_ => conn.close())
   }
