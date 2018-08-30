@@ -1,6 +1,7 @@
 import { ITodoList } from "@/model/todo2";
 import { ElInput } from "element-ui/types/input";
 import { Component, Vue } from "vue-property-decorator";
+import { todoApi } from "@/components/elementui-todo/todo-model";
 
 @Component
 export default class EuiTodoListEditDialog extends Vue {
@@ -36,7 +37,9 @@ export default class EuiTodoListEditDialog extends Vue {
   private okHandler(): void {
     if (this.canApply) {
       this.todoList!.name = this.listName!;
-    }
+      todoApi.updateList(this.todoList!).
+        catch(err => alert(err.message));
+      }
     this.closeDialog();
   }
 }

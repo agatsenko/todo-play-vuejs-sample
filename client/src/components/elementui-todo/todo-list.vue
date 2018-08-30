@@ -63,7 +63,7 @@
     </div>
   </el-card>
 
-  <EuiTodoListEditDialog ref="renameListDialog"/>
+  <EuiTodoListEditDialog ref="renameListDialog" @itemModified="itemModified"/>
   <eui-todo-item-edit-dialog ref="itemEditDialog"/>
 </div>
 </template>

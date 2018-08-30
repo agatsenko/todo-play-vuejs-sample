@@ -1,26 +1,9 @@
-# vuejs-ts-todo
+# todo-play-vuejs-sample
 
-## Project setup
-```
-npm install
-```
+Study Vue.js and integrate it with the Play Framework.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Run project:
 
-### Compiles and minifies for production
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your unit tests
-```
-npm run test:unit
+sbt build run
 ```

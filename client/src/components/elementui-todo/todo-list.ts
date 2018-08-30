@@ -4,6 +4,7 @@ import { createTodoTask } from "@/components/elementui-todo/todo-model";
 import { ITodoList, ITodoTask } from "@/model/todo2";
 import { ElInput } from "element-ui/types/input";
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { todoApi } from "./todo-model";
 
 @Component({
   components: {
@@ -71,7 +72,7 @@ export default class EuiTodoList extends Vue {
   addItem(): void {
     if (this.canAddItem) {
       this.list.tasks.push(createTodoTask(this.newItemDescription!));
-      this.newItemDescription = "";
+      this.saveList().then(() => this.newItemDescription = "");
     }
   }
 
@@ -80,10 +81,15 @@ export default class EuiTodoList extends Vue {
     dialog.showDialog(task);
   }
 
+  itemModified(task: ITodoTask): void {
+    this.saveList();
+  }
+
   deleteItem(task: ITodoTask): void {
     const foundIndex = this.list.tasks.findIndex(t => t.id === task.id);
     if (foundIndex > -1) {
       this.list.tasks.splice(foundIndex, 1);
+      this.saveList();
     }
   }
 
@@ -98,6 +104,7 @@ export default class EuiTodoList extends Vue {
             --i;
           }
         }
+        this.saveList();
       }).
       catch(() => {
         // do nothing
@@ -107,5 +114,11 @@ export default class EuiTodoList extends Vue {
   rowClassName(rowInfo: any): string {
     const task = rowInfo.row as ITodoTask;
     return task.completed ? "eui-completed-task-row" : "";
+  }
+
+  private saveList(): Promise<void> {
+    return todoApi.updateList(this.list).
+      then(list => undefined).
+      catch(err => alert(err.message));
   }
 }

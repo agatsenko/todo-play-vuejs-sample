@@ -37,6 +37,7 @@ export default class EuiTodoItemEditDialog extends Vue {
   private okHandler(): void {
     if (this.canApply) {
       this.task!.description = this.description!;
+      this.$emit("itemModified", this.task);
     }
     this.closeDialog();
   }
