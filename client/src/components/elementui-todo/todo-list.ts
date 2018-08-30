@@ -1,8 +1,9 @@
-import { Vue, Component, Prop } from "vue-property-decorator";
-import { TodoList, TodoItem } from "@/model/todo";
-import { ElInput } from "element-ui/types/input";
-import EuiTodoListEditDialog from "@/components/elementui-todo/todo-list-editor";
 import EuiTodoItemEditDialog from "@/components/elementui-todo/todo-item-editor";
+import EuiTodoListEditDialog from "@/components/elementui-todo/todo-list-editor";
+import { createTodoTask } from "@/components/elementui-todo/todo-model";
+import { ITodoList, ITodoTask } from "@/model/todo2";
+import { ElInput } from "element-ui/types/input";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component({
   components: {
@@ -11,15 +12,15 @@ import EuiTodoItemEditDialog from "@/components/elementui-todo/todo-item-editor"
   },
 })
 export default class EuiTodoList extends Vue {
-  @Prop({ required: true }) list!: TodoList;
+  @Prop({ required: true }) list!: ITodoList;
 
   newItemDescription: string | null = null;
 
   editItemDialogVisible = false;
-  itemToEdit: TodoItem | null = null;
+  itemToEdit: ITodoTask | null = null;
 
   get hasCompletedItems(): boolean {
-    return this.list.items.find(item => item.completed) !== undefined;
+    return this.list.tasks.find(task => task.completed) !== undefined;
   }
 
   get canAddItem(): boolean {
@@ -28,16 +29,16 @@ export default class EuiTodoList extends Vue {
 
   get activeItemsCount(): number {
     let activeCount = 0;
-    this.list.items.forEach(item => {
-      if (!item.completed) {
+    this.list.tasks.forEach(task => {
+      if (!task.completed) {
         ++activeCount;
       }
     });
     return activeCount;
   }
 
-  get items(): ReadonlyArray<TodoItem> {
-    return this.list.items;
+  get items(): ReadonlyArray<ITodoTask> {
+    return this.list.tasks;
   }
 
   mounted(): void {
@@ -63,34 +64,37 @@ export default class EuiTodoList extends Vue {
       });
   }
 
-  filterItems(completed: boolean, item: TodoItem): boolean {
-    return item.completed === completed;
+  filterItems(completed: boolean, task: ITodoTask): boolean {
+    return task.completed === completed;
   }
 
   addItem(): void {
     if (this.canAddItem) {
-      this.list.put({ description: this.newItemDescription! });
+      this.list.tasks.push(createTodoTask(this.newItemDescription!));
       this.newItemDescription = "";
     }
   }
 
-  editItem(item: TodoItem): void {
+  editItem(task: ITodoTask): void {
     const dialog = this.$refs.itemEditDialog as EuiTodoItemEditDialog;
-    dialog.showDialog(item);
+    dialog.showDialog(task);
   }
 
-  deleteItem(item: TodoItem): void {
-    this.list.remove(item.id);
+  deleteItem(task: ITodoTask): void {
+    const foundIndex = this.list.tasks.findIndex(t => t.id === task.id);
+    if (foundIndex > -1) {
+      this.list.tasks.splice(foundIndex, 1);
+    }
   }
 
   clearCompletedItems(): void {
     this.
       $confirm("Are you sure to delete the all completed tasks?", "Clear Completed Tsks").
       then(() => {
-        for (let i = 0; i < this.list.items.length; ++i) {
-          const item = this.list.items[i];
-          if (item.completed) {
-            this.list.remove(item);
+        for (let i = 0; i < this.list.tasks.length; ++i) {
+          const task = this.list.tasks[i];
+          if (task.completed) {
+            this.deleteItem(task);
             --i;
           }
         }
@@ -101,7 +105,7 @@ export default class EuiTodoList extends Vue {
   }
 
   rowClassName(rowInfo: any): string {
-    const item = rowInfo.row as TodoItem;
-    return item.completed ? "eui-completed-task-row" : "";
+    const task = rowInfo.row as ITodoTask;
+    return task.completed ? "eui-completed-task-row" : "";
   }
 }

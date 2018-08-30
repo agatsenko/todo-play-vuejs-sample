@@ -1,10 +1,10 @@
-import { Vue, Component, Prop } from "vue-property-decorator";
-import { TodoList } from "@/model/todo";
+import { ITodoList } from "@/model/todo2";
 import { ElInput } from "element-ui/types/input";
+import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class EuiTodoListEditDialog extends Vue {
-  private todoList: TodoList | null = null;
+  private todoList: ITodoList | null = null;
   private dialogVisible: boolean = false;
   private listName: string | null = null;
 
@@ -12,7 +12,7 @@ export default class EuiTodoListEditDialog extends Vue {
     return this.todoList != null && this.listName != null && this.listName.length > 0;
   }
 
-  showDialog(list: TodoList): void {
+  showDialog(list: ITodoList): void {
     this.todoList = list;
     this.listName = list.name;
     this.dialogVisible = true;

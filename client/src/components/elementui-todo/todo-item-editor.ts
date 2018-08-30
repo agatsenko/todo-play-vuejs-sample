@@ -1,20 +1,21 @@
+import { ITodoTask } from "@/model/todo2";
 import { Vue, Component, Prop } from "vue-property-decorator";
 import { TodoItem } from "@/model/todo";
 import { ElInput } from "element-ui/types/input";
 
 @Component
 export default class EuiTodoItemEditDialog extends Vue {
-  private todoItem: TodoItem | null = null;
+  private task: ITodoTask | null = null;
   private dialogVisible: boolean = false;
   private description: string | null = null;
 
   private get canApply(): boolean {
-    return this.todoItem !== null && this.description !== null && this.description.length > 0;
+    return this.task !== null && this.description !== null && this.description.length > 0;
   }
 
-  showDialog(todoItem: TodoItem): void {
-    this.todoItem = todoItem;
-    this.description = todoItem.description;
+  showDialog(task: ITodoTask): void {
+    this.task = task;
+    this.description = task.description;
     this.dialogVisible = true;
 
     this.$nextTick(() => {
@@ -25,7 +26,7 @@ export default class EuiTodoItemEditDialog extends Vue {
   }
 
   private clearData(): void {
-    this.todoItem = null;
+    this.task = null;
     this.description = null;
   }
 
@@ -35,7 +36,7 @@ export default class EuiTodoItemEditDialog extends Vue {
 
   private okHandler(): void {
     if (this.canApply) {
-      this.todoItem!.description = this.description!;
+      this.task!.description = this.description!;
     }
     this.closeDialog();
   }

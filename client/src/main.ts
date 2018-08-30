@@ -8,12 +8,8 @@ import {
   faCoffee as fasCoffee,
   faList as fasList,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faCheckSquare as farCheckSquare,
-} from "@fortawesome/free-regular-svg-icons";
-import {
-  faCcVisa as fabCcVisa,
-} from "@fortawesome/free-brands-svg-icons";
+import { faCheckSquare as farCheckSquare } from "@fortawesome/free-regular-svg-icons";
+import { faCcVisa as fabCcVisa } from "@fortawesome/free-brands-svg-icons";
 
 import ElementUI from "element-ui";
 import locale from "element-ui/lib/locale/lang/en";
@@ -23,7 +19,6 @@ import "element-ui/lib/theme-chalk/index.css";
 import router from "@/router";
 import App from "@/app";
 import "@/styles/main.scss";
-
 
 faLibrary.add(
   // FIXME: need to remove
@@ -44,3 +39,4 @@ new Vue({
   router,
   render: h => h(App),
 }).$mount("#app");
+
