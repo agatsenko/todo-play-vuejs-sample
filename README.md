@@ -8,4 +8,4 @@ Run project:
 sbt build run
 ```
 
-and open **http://localhost:9000/todo/** URL in browser.
+and open http://localhost:9000/todo/ URL in browser.
